@@ -1,4 +1,6 @@
 ---
+# This file deploys all resources necessary for a working, single-node ElasticSearch
+# service to sink fluentd events.
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
