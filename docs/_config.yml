@@ -31,7 +31,7 @@ domain: "miscellanea-io.github.io"
 github_username:  jasonhallford
 
 # Build settings
-theme: minima
+theme: jekyll-theme-architect
 plugins:
   - jekyll-feed
 
