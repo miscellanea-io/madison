@@ -40,7 +40,7 @@ spec:
           image: elasticsearch:7.14.2
           resources:
             limits:
-              cpu: 1000m
+              cpu: 2000m
             requests:
               cpu: 500m
               memory: 256Mi
@@ -51,7 +51,7 @@ spec:
             - name: discovery.type
               value: single-node
             - name: ES_JAVA_OPTS
-              value: "-Xms128m -Xmx128m"
+              value: "-Xms256m -Xmx256m"
           volumeMounts:
             - mountPath: "/usr/share/elasticsearch/data"
               name: data-pv
