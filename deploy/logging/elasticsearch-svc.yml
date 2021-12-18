@@ -8,7 +8,6 @@ metadata:
   namespace: kube-logging
   name: es-logging-svc
 spec:
-  type: NodePort
   selector:
     app: es-logging
   ports:

@@ -8,11 +8,12 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
+  namespace: kube-logging
   name: es-data-pvc
 spec:
   storageClassName: managed-nfs-storage
   resources:
     requests:
-      storage: 10Gi
+      storage: 25Gi
   accessModes:
     - ReadWriteOnce
