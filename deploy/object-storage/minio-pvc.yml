@@ -1,0 +1,19 @@
+---
+# Create an nfs-backed persistent volume claim to hold ElasticSearch indexes. This
+# PVC assumes the following:
+# * The Kubernetes NFS Subdir External Provisioner (see https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner)
+#   is installed in the cluster
+# * The NFS provisioner will provision an NFS v4 mount. While NFS technically isn't support by
+#   ElasticSearch it will work with NFS v4 only.
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  namespace: kube-objstore
+  name: minio-data-pvc
+spec:
+  storageClassName: openebs-jiva-csi-default
+  resources:
+    requests:
+      storage: 50Gi
+  accessModes:
+    - ReadWriteOnce

@@ -1,0 +1,21 @@
+---
+# Create a service to expose the ElasticSearch deployment on the service network at TCP/9200.
+# For convenience, the service also exposes a node port to permit smoke testing or external
+# access to the ES server.
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: kube-objstore
+  name: minio-svc
+spec:
+  selector:
+    app: minio
+  ports:
+    - name: admin
+      port: 9001
+      protocol: TCP
+      targetPort: 9001
+    - name: s3
+      port: 9000
+      protocol: TCP
+      targetPort: 9000

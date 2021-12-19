@@ -1,0 +1,29 @@
+---
+# Create an ingress to access the Kibana service.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-ingress
+  namespace: kube-objstore
+spec:
+  rules:
+    - host: minio-console.lab
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: minio-svc
+                port:
+                  number: 9001
+    - host: minio.lab
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: minio-svc
+                port:
+                  number: 9000
