@@ -8,10 +8,10 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  namespace: kube-objstore
-  name: minio-data-pvc
+  namespace: kube-registry
+  name: registry-data-pvc
 spec:
-  storageClassName: openebs-jiva-csi-default
+  storageClassName: openebs-hostpath
   resources:
     requests:
       storage: 50Gi

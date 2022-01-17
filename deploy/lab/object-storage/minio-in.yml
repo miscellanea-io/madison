@@ -5,6 +5,8 @@ kind: Ingress
 metadata:
   name: minio-ingress
   namespace: kube-objstore
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 500m
 spec:
   rules:
     - host: minio-console.lab

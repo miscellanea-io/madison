@@ -9,6 +9,7 @@ metadata:
   labels:
     k8s-app: fluentd-logging
     version: v1
+    kubernetes.io/cluster-service: "true"
 spec:
   selector:
     matchLabels:
@@ -26,6 +27,9 @@ spec:
       containers:
         - name: fluentd
           image: fluent/fluentd-kubernetes-daemonset:v1-debian-elasticsearch
+          #image: fluent/fluent-bit:1.8
+          #ports:
+          #  - containerPort: 2020
           env:
             - name: FLUENT_ELASTICSEARCH_HOST
               value: "es-logging-svc"
@@ -44,6 +48,7 @@ spec:
               value: /^(?<time>.+) (?<stream>stdout|stderr)( (?<logtag>.))? (?<log>.*)$/
           resources:
             limits:
+              cpu: "1"
               memory: 200Mi
             requests:
               cpu: 100m
@@ -53,6 +58,7 @@ spec:
               mountPath: /var/log
             - name: dockercontainerlogdirectory
               mountPath: /var/log/pods
+              #mountPath: /var/lib/docker/containers
               readOnly: true
       terminationGracePeriodSeconds: 30
       volumes:

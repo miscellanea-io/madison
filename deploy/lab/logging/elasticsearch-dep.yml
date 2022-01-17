@@ -27,7 +27,8 @@ spec:
           image: elasticsearch:7.14.2
           resources:
             limits:
-              cpu: 2000m
+              cpu: 1500m
+              memory: 512Mi
             requests:
               cpu: 500m
               memory: 256Mi
