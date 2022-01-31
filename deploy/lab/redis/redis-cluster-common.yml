@@ -1,0 +1,87 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-cluster-common
+  namespace: redis
+data:
+  script: |
+    # Given a node name, create a FQDN that can be resolved within the service 
+    # network.
+    create_node_FQDN() {
+      echo "$1.redis-svc.redis.svc.cluster.local"
+    }
+
+    # Create an array of cluster member FQDNs. Values are added to an empty array that
+    # must be passed as the first argument.    
+    list_cluster_members() {
+      local -n members=$1
+      for ((i=0; i<$2; i++))
+      do
+        members[i]="$(create_node_FQDN redis-$i)"
+      done
+    }
+
+    # Test a cluster member to see if it's online.
+    is_node_online() {
+      if [[ $(redis-cli -h $1 -p 6379 ping) == "PONG" ]]; then
+        echo "yes"
+      else
+        echo "no"
+      fi
+    }
+
+    # Wait for a set of Redis nodes to be ready before returning control to the caller.
+    # The set must be passed as an array in first argument.
+    wait_for_cluster_ready() {
+      local -n members=$1
+      for i in "${members[@]}"
+      do
+          while [[ $(is_node_online $i) == "no" ]]
+          do
+              echo "Waiting for redis server $i to come online."
+              sleep 5
+          done  
+          echo "Redis server $i is online."
+      done
+    }
+
+    # Retrieve a cluster member's IP address.
+    lookup_node_ip() {
+      local member_ip=($(getent hosts $1)) 
+      echo ${member_ip[0]}
+    }
+
+    # Iterate through a provided array of cluster nodes and write each one's
+    # name and current IP address to a file.
+    write_address_map() {
+      local -n members=$1
+
+      if [ -f "$REDIS_DATA_DIR/$2" ]; then
+        rm "$REDIS_DATA_DIR/$2"
+      fi
+
+      for i in "${members[@]}"
+      do
+          local ip=$(lookup_node_ip $i)
+          echo "$i $ip" >> "$REDIS_DATA_DIR/$2"
+      done      
+    }
+
+    # Given an FQDN, search the address map for the node's IP and return it to
+    # the caller.
+    find_address_in_map() {
+      local address=""
+      local map_file=$2
+
+      while IFS= read -r line
+      do 
+        local record=($line)
+        if [[ "${record[0]}" == "$1" ]]; then
+          address="${record[1]}"
+          break
+        fi
+      done < "$map_file"
+
+      echo "$address"
+    }
