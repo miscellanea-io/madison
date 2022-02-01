@@ -1,12 +1,11 @@
----
+# A stateful set for deploying a sharded Redis 6.x cluster.
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  namespace: redis
   name: redis
 spec:
   serviceName: redis-svc
-  replicas: 3
+  replicas: 6
   selector:
     matchLabels:
       app: redis
@@ -29,9 +28,9 @@ spec:
                 command: ["bash", "/var/lib/redis/write-address-map.sh"]
           env:
             - name: REDIS_NODE_COUNT
-              value: "3"
+              value: "6"
             - name: REDIS_CLUSTER_REPLICAS
-              value: "0"
+              value: "1"
             - name: REDIS_SCRIPT_DIR
               value: "/var/lib/redis"
             - name: REDIS_DATA_DIR
@@ -67,7 +66,7 @@ spec:
           args: ["/var/lib/redis/fix-address.sh"]
           env:
             - name: REDIS_NODE_COUNT
-              value: "3"
+              value: "6"
             - name: REDIS_SCRIPT_DIR
               value: "/var/lib/redis"
             - name: REDIS_DATA_DIR

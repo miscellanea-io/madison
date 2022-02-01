@@ -1,9 +1,8 @@
----
+# Headless service required to manage the stateful set's network namespace.
 apiVersion: v1
 kind: Service
 metadata:
   name: redis-svc
-  namespace: redis
   labels:
     app: redis
 spec:

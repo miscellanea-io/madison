@@ -1,0 +1,35 @@
+# Scale the deployment for the lab by eliminating any replicas.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  serviceName: redis-svc
+  replicas: 3
+  template:
+    spec:
+      containers:
+        - name: redis
+          env:
+            - name: REDIS_NODE_COUNT
+              value: "3"
+            - name: REDIS_CLUSTER_REPLICAS
+              value: "0"
+      initContainers:
+        - name: redis-cluster-address-fix
+          env:
+            - name: REDIS_NODE_COUNT
+              value: "3"
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        namespace: redis-lab
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: "openebs-hostpath"
+        resources:
+          requests:
+            storage: 500Mi

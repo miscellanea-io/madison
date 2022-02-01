@@ -3,13 +3,12 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: redis-cluster-common
-  namespace: redis
 data:
   script: |
     # Given a node name, create a FQDN that can be resolved within the service 
     # network.
     create_node_FQDN() {
-      echo "$1.redis-svc.redis.svc.cluster.local"
+      echo "$1.redis-svc.$POD_NAMESPACE.svc.cluster.local"
     }
 
     # Create an array of cluster member FQDNs. Values are added to an empty array that

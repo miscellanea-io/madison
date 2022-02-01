@@ -3,7 +3,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: redis-cluster-addr-map
-  namespace: redis
 data:
   script: |
     # Capture the addresses of all known cluster members immediately before 
