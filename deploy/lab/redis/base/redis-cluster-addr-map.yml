@@ -9,7 +9,5 @@ data:
     # shutdown.
     source "$REDIS_SCRIPT_DIR/cluster-common.sh"
 
-    cluster_members=()
-    list_cluster_members cluster_members $REDIS_NODE_COUNT
-
-    write_address_map cluster_members "address_map.txt"
+    FQDN="$(lookup_node_ip $POD_NAME)"
+    update_last_known_address "$FQDN"
