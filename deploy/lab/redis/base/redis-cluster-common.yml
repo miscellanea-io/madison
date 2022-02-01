@@ -53,25 +53,31 @@ data:
 
     # Iterate through a provided array of cluster nodes and write each one's
     # name and current IP address to a file.
-    write_address_map() {
-      local -n members=$1
+    update_lkna() {
+      local ip=$(lookup_node_ip $1)    
+      local replacement="$1 $ip"
 
-      if [ -f "$REDIS_DATA_DIR/$2" ]; then
-        rm "$REDIS_DATA_DIR/$2"
-      fi
-
-      for i in "${members[@]}"
-      do
-          local ip=$(lookup_node_ip $i)
-          echo "$i $ip" >> "$REDIS_DATA_DIR/$2"
-      done      
+      if [ -f "$REDIS_CLUSTER_STATE_DIR/last_known_address.txt" ]; then
+        if cat $REDIS_CLUSTER_STATE_DIR/last_known_address.txt | grep -e "$1"; then
+          # We have a record of this node; update the file with the current address.          
+          echo "Updating existing entry with '$replacement'"
+          sed -i "s/$1 .*/$replacement/" $REDIS_CLUSTER_STATE_DIR/last_known_address.txt
+        else
+          # We don't know about this node yet; add it to the file.
+          echo "Adding '$replacement' to file."
+          echo "$replacement" >> "$REDIS_CLUSTER_STATE_DIR/last_known_address.txt"
+        fi
+      else
+        # Looks like this is the first node; create the file.
+        echo "Creating new file."
+        echo "$replacement" >> "$REDIS_CLUSTER_STATE_DIR/last_known_address.txt"
+      fi   
     }
 
     # Given an FQDN, search the address map for the node's IP and return it to
     # the caller.
-    find_address_in_map() {
+    find_lkna() {
       local address=""
-      local map_file=$2
 
       while IFS= read -r line
       do 
@@ -80,7 +86,7 @@ data:
           address="${record[1]}"
           break
         fi
-      done < "$map_file"
+      done < $REDIS_CLUSTER_STATE_DIR/last_known_address.txt
 
       echo "$address"
     }

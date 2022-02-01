@@ -7,14 +7,14 @@ data:
   script: |
     source "$REDIS_SCRIPT_DIR/cluster-common.sh"
 
-    # Create an array containing the FQDNs for all members of the
-    # redis stateful set.
-    cluster_members=()
-    list_cluster_members cluster_members $REDIS_NODE_COUNT
-
     if [ "$POD_NAME" = "redis-$(($REDIS_NODE_COUNT-1))" ] && [ $(wc -l < "$REDIS_DATA_DIR/nodes.conf") -lt 3 ]
     then
       echo "Creating Redis cluster in namespace $POD_NAMESPACE"
+
+      # Create an array containing the FQDNs for all members of the
+      # redis stateful set.
+      cluster_members=()
+      list_cluster_members cluster_members $REDIS_NODE_COUNT      
 
       # Wait for all cluster members to be online and available before
       # proceeding.
@@ -41,3 +41,9 @@ data:
     else
       echo "A Redis cluster already exists in namespace '$POD_NAMESPACE'."
     fi
+
+    # Update this cluster's address in the last-known address file.    
+    FQDN=$(create_node_FQDN "$POD_NAME")
+    echo "Updating last known address for Redis cluster node $FQDN."
+
+    update_lkna $FQDN

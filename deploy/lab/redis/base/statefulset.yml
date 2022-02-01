@@ -23,9 +23,6 @@ spec:
             postStart:
               exec:
                 command: ["bash", "/var/lib/redis/init-cluster.sh"]
-            preStop:
-              exec:
-                command: ["bash", "/var/lib/redis/write-address-map.sh"]
           env:
             - name: REDIS_NODE_COUNT
               value: "6"
@@ -33,6 +30,8 @@ spec:
               value: "1"
             - name: REDIS_SCRIPT_DIR
               value: "/var/lib/redis"
+            - name: REDIS_CLUSTER_STATE_DIR
+              value: "/var/lib/redis_cluster"
             - name: REDIS_DATA_DIR
               value: "/data"
             - name: POD_NAMESPACE
@@ -59,6 +58,8 @@ spec:
               mountPath: /etc/redis/
             - name: redis-scripts
               mountPath: /var/lib/redis
+            - name: redis-cluster-state
+              mountPath: /var/lib/redis_cluster
       initContainers:
         - name: redis-cluster-address-fix
           image: redis:6
@@ -69,6 +70,8 @@ spec:
               value: "6"
             - name: REDIS_SCRIPT_DIR
               value: "/var/lib/redis"
+            - name: REDIS_CLUSTER_STATE_DIR
+              value: "/var/lib/redis_cluster"
             - name: REDIS_DATA_DIR
               value: "/data"
             - name: POD_NAMESPACE
@@ -88,10 +91,15 @@ spec:
               mountPath: /data
             - name: redis-scripts
               mountPath: /var/lib/redis
+            - name: redis-cluster-state
+              mountPath: /var/lib/redis_cluster
       volumes:
         - name: redis-config
           configMap:
             name: redis-config
+        - name: redis-cluster-state
+          persistentVolumeClaim:
+            claimName: redis-cluster-state-pvc
         - name: redis-scripts
           projected:
             sources:

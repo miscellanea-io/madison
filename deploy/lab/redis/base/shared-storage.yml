@@ -1,0 +1,13 @@
+# Create a persistent volume claim for a volume shared between all
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  namespace: redis
+  name: redis-cluster-state-pvc
+spec:
+  storageClassName: managed-nfs-storage
+  resources:
+    requests:
+      storage: 10Mi
+  accessModes:
+    - ReadWriteMany

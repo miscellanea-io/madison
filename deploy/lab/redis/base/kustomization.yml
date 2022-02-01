@@ -9,5 +9,6 @@ resources:
   - redis-cluster-addr-map.yml
   - redis-cluster-fix-address.yml
   - redis-config.yml
+  - shared-storage.yml
   - service.yml
   - statefulset.yml

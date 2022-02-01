@@ -11,7 +11,7 @@ data:
       local -n addresses=$2 
 
       local IP="$(lookup_node_ip $1)"
-      local prior_IP="$(find_address_in_map $1 $REDIS_DATA_DIR/address_map.txt)"
+      local prior_IP="$(find_lkna $1)"
 
       addresses=("$1" "$IP" "$prior_IP")
     }
@@ -28,7 +28,7 @@ data:
     }
 
     # Only execute this script if the node already belongs to a Redis cluster.
-    if [ -f "$REDIS_DATA_DIR/address_map.txt" ] && [ -f "$REDIS_DATA_DIR/nodes.conf" ] && [ $(wc -l < "$REDIS_DATA_DIR/nodes.conf") -gt 2 ]
+    if [ -f "$REDIS_DATA_DIR/nodes.conf" ] && [ $(wc -l < "$REDIS_DATA_DIR/nodes.conf") -gt 2 ]
     then
       echo "Node belongs to a cluster; fixing node addresses."
 
