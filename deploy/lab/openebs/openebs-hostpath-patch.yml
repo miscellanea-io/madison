@@ -1,7 +1,0 @@
-metadata:
-  annotations:
-    cas.openebs.io/config: |
-      - name: StorageType
-        value: "hostpath"
-      - name: BasePath
-        value: /mnt/openebs-hostpath

@@ -1,0 +1,13 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: es-data-pvc
+  labels:
+    app: elasticsearch
+spec:
+  storageClassName: managed-nfs-storage
+  resources:
+    requests:
+      storage: 100Gi
+  accessModes:
+    - ReadWriteOnce

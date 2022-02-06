@@ -1,0 +1,54 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-cluster-fix-address
+data:
+  script: |
+    source "$REDIS_SCRIPT_DIR/cluster-common.sh"
+
+    populate_addresses() {
+      local -n addresses=$2 
+
+      local IP="$(lookup_node_ip $1)"
+      local prior_IP="$(find_last_known_address $1)"
+
+      addresses=("$1" "$IP" "$prior_IP")
+    }
+
+    update_cluster_address() {
+      if [[ "$2" == "$3" ]]; then
+        echo "IP address for node $1 has not changed; nothing to update."   
+      elif [[ -z "$3" ]]; then
+        echo "New IP address for node $1 is not available; skipping."     
+      else
+        sed -i "s/$3/$2/" $REDIS_DATA_DIR/nodes.conf
+        echo "IP address for node $1 has changed (was $3, now $2); updating $REDIS_DATA_DIR/nodes.conf."         
+      fi      
+    }
+
+    # Only execute this script if the node already belongs to a Redis cluster.
+    if [ -f "$REDIS_DATA_DIR/nodes.conf" ] && [ $(wc -l < "$REDIS_DATA_DIR/nodes.conf") -gt 2 ]
+    then
+      echo "Node belongs to a cluster; fixing node addresses."
+
+      cluster_members=()
+      list_cluster_members cluster_members $REDIS_NODE_COUNT
+
+      # Ensure the address of each on-line node is up-to-date.
+      for i in "${cluster_members[@]}"
+      do
+        if [[ $i == $POD_NAME* ]] || [[ $(is_node_online $i) == "yes" ]]; then
+          # Only attempt to fix addresses for nodes that are online.
+          address_info=()
+          populate_addresses $i address_info
+          msg=$(update_cluster_address "${address_info[0]}" "${address_info[1]}" "${address_info[2]}")
+
+          echo $msg
+        else
+          echo "Node $i is not online; skipping."
+        fi
+      done
+    else
+      echo "Node does not belong to a cluster."
+    fi

@@ -1,0 +1,6 @@
+---
+# Create a namespace to host cluster logging components.
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: redis

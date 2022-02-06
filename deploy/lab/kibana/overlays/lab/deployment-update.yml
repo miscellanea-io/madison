@@ -1,0 +1,14 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: kibana
+  labels:
+    app: kibana
+spec:
+  template:
+    spec:
+      containers:
+        - name: kibana
+          resources:
+            limits:
+              memory: 768Mi

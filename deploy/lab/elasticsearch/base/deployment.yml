@@ -1,0 +1,43 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: elasticsearch
+  labels:
+    app: elasticsearch
+spec:
+  selector:
+    matchLabels:
+      app: elasticsearch
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      volumes:
+        - name: data-pv
+          persistentVolumeClaim:
+            claimName: es-data-pvc
+      containers:
+        - name: elasticsearch
+          image: elasticsearch:7.17.0
+          resources:
+            limits:
+              cpu: "2"
+              memory: 768Mi
+            requests:
+              cpu: "1"
+              memory: 512Mi
+          ports:
+            - containerPort: 9200
+            - containerPort: 9300
+          env:
+            - name: discovery.type
+              value: single-node
+            - name: ES_JAVA_OPTS
+              value: "-Xms5125m -Xmx512m"
+          volumeMounts:
+            - mountPath: "/usr/share/elasticsearch/data"
+              name: data-pv
+#      imagePullSecrets:
+#        - name: dockerhub

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentd
+  namespace: kube-system
+spec:
+  template:
+    spec:
+      containers:
+        - name: fluentd
+          env:
+            - name: FLUENT_ELASTICSEARCH_SSL_VERSION
+              value: TLSv1_2
+              $patch: delete
+            - name: FLUENT_ELASTICSEARCH_SSL_VERIFY
+              value: "true"
+              $patch: delete
+            - name: LOGZIO_TOKEN
+              value: ThisIsASuperLongToken
+              $patch: delete
+            - name: LOGZIO_LOGTYPE
+              value: kubernetes
+              $patch: delete
+            - name: FLUENT_ELASTICSEARCH_USER
+              value: elastic
+              $patch: delete
+            - name: FLUENT_ELASTICSEARCH_PASSWORD
+              value: changeme
+              $patch: delete

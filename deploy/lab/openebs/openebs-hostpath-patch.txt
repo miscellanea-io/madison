@@ -1,7 +1,0 @@
-The companion YAML file can be used to patch the openebs-hostpath storage class created by the microk8s
-OpenEBS add-on. Why would you want to do this? In my case, I wanted to use SSDs mounted on some nodes
-instead of the default path inside the snap's file system. 
-
-You can apply the patch as follows...
-- PowerShell: kubectl patch storageclass/openebs-hostpath --patch $(Get-Content openebs-hostpath-patch.yml -Raw)
-- Bash: kubectl patch storageclass/openebs-hostpath --patch "$(cat openebs-hostpath-patch.yaml)"
