@@ -12,3 +12,4 @@ spec:
           resources:
             limits:
               memory: 768Mi
+              cpu: "1"
