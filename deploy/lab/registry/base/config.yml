@@ -1,0 +1,40 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: registry-config
+data:
+  config.yml: |
+    version: 0.1
+    log:
+      accesslog:
+        disabled: true
+      level: debug
+      formatter: text
+      fields:
+        service: registry
+        environment: lab
+      hooks:
+        - type: mail
+          disabled: true
+    storage:
+      s3:
+        region: us-east-1
+        regionendpoint: "http://minio.minio.svc.cluster.local:9000"
+        bucket: image-registry
+        encrypt: false
+        secure: false
+        v4auth: true
+        chunksize: 5242880
+        rootdirectory: /
+      delete:
+        enabled: true 
+      redirect:
+        # IMPORTANT: Redirection *must* be disable when using Minio as an S3 storage back-end!
+        #            Neglecting to disable this feature will result in successful uploads to
+        #            the storage back-end but infinite "Retry in x seconds" messages when
+        #            running "docker push".      
+        disable: true   
+    http:
+      addr: 0.0.0.0:5000
+      net: tcp

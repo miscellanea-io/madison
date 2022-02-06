@@ -1,12 +1,7 @@
----
-# Create an ingress to access the Kibana service.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: registry-ingress
-  namespace: kube-registry
-  annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: 500m
+  name: registry
 spec:
   rules:
     - host: registry.lab
@@ -16,6 +11,6 @@ spec:
             path: "/"
             backend:
               service:
-                name: registry-svc
+                name: registry
                 port:
                   number: 5000
