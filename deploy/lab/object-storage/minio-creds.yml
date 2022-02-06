@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: Secret
-metadata:
-  name: minio-creds
-  namespace: kube-objstore
-type: Opaque
-data:
-  rootUser: bWluaW8tYWRtaW4=
-  rootPassword: UzNjcmV0UGFzc3cwcmQ=
